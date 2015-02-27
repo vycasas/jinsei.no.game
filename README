@@ -1,0 +1,18 @@
+Jinsei no Game (Game of Life)
+
+About:
+This is a small project written in Haskell demostrating Conway's Game of Life. 
+It is pretty basic, but a very good learning experience. It currently 
+demonstrates the Pulsar pattern, but you can change the initial configuration 
+in the Main.hs.
+
+Building:
+This project uses Cabal. If you have the Haskell platform in your system, then 
+you can build the project by executing:
+
+> cabal build
+
+The output will be in the "dist" directory.
+
+TODO:
+* Process command line arguments for inputs like initial grid states.
