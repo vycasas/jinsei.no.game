@@ -14,5 +14,3 @@ you can build the project by executing:
 
 The output will be in the "dist" directory.
 
-TODO:
-* Process command line arguments for inputs like initial grid states.

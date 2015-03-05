@@ -1,20 +1,25 @@
 import Control.Concurrent
-import Grid
+import Control.Exception
+import System.Directory
+import System.Environment
+import System.Exit
+import System.IO
+
+import qualified Grid as Grid
 
 clearScreen :: IO ()
 clearScreen = putStrLn $ take 50 $ repeat '\n'
 
-mainLoop :: Grid -> IO ()
+mainLoop :: Grid.Grid -> IO ()
 mainLoop g = do
     clearScreen
-    let ng = nextGridState g
+    let ng = Grid.nextGridState g
     putStrLn $ show ng
     threadDelay 500000
     mainLoop ng
 
-main :: IO()
-main = do
-    -- Pulsar
+runPulsar :: IO ()
+runPulsar = do
     let emptyGrid = Grid.create 15 15
     let startingCells = [
             (4, 2), (5, 2), (6, 2),
@@ -34,4 +39,35 @@ main = do
             (4, 14), (5, 14), (6, 14),
             (10, 14), (11, 14), (12, 14)
             ]
-    mainLoop $ initialize emptyGrid startingCells
+    mainLoop $ Grid.initialize emptyGrid startingCells
+
+processFile :: Handle -> IO Grid.Grid
+processFile f = do
+    cStr <- hGetLine f
+    rStr <- hGetLine f
+    sGridStr <- hGetContents f
+    let c = read cStr :: Int
+    let r = read rStr :: Int
+    let sGrid = read sGridStr :: [(Int, Int)]
+    let g = Grid.initialize (Grid.create c r) sGrid
+    return (g)
+
+main :: IO()
+main = do
+    args <- getArgs
+    case args of
+        [] -> runPulsar
+        (a:_) -> do
+            fileExists <- doesFileExist a
+            if fileExists
+                then do
+                    f <- openFile a ReadMode
+                    g <- processFile f
+                    mainLoop g
+                    hClose f
+                    exitSuccess
+                else do
+                    hPutStrLn stderr $ "Error: File \"" ++ a ++ "\"does not exist."
+                    exitFailure
+
+
